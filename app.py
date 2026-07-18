@@ -8,58 +8,59 @@ st.set_page_config(
     layout="centered"
 )
 
-# 2. Hyper-Colorful, Bubbly & Lively CSS Engine
+# 2. Hyper-Colorful, Bubbly & Light-Mode Locked CSS Engine
 st.markdown("""
     <style>
+    /* Absolute Force Light Mode Overrides */
+    [data-testid="stAppViewContainer"], .stApp, html, body {
+        background: linear-gradient(135deg, #FFDEE9 0%, #B5FFFC 100%) !important;
+        background-attachment: fixed !important;
+        color: #000000 !important;
+    }
+    
     /* Reset Streamlit defaults */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
-    
-    /* Dynamic Candy Gradient Background */
-    [data-testid="stAppViewContainer"] {
-        background: linear-gradient(135deg, #FFDEE9 0%, #B5FFFC 100%) !important;
-        background-attachment: fixed !important;
-        overflow-x: hidden;
-    }
     
     .block-container {
         padding-top: 2rem !important;
         padding-bottom: 3rem !important;
         max-width: 520px !important;
         position: relative;
-        z-index: 10; /* Keeps all text/cards above the screen game canvas */
-        pointer-events: none; /* Allows clicks to pass through empty space to the canvas */
+        z-index: 10;
+        pointer-events: none;
     }
 
-    /* Make sure components inside the block container can still be clicked */
+    /* Allow clicking on the layout content elements */
     .game-zone, .link-card, .section-tag, .copy-pill {
         pointer-events: auto;
     }
 
-    /* === ABSOLUTE FULL SCREEN INTERACTIVE GAME CANVAS === */
+    /* === FIXED FULL SCREEN INTERACTIVE GAME CANVAS === */
     #bubbleCanvas {
         position: fixed;
         top: 0;
         left: 0;
         width: 100vw;
         height: 100vh;
-        z-index: 1; /* Sits directly behind text but above background color */
+        z-index: 2;
         cursor: pointer;
+        pointer-events: auto;
     }
 
     /* === NEON CARTOON HUB HEADERS === */
     .game-zone {
-        background: rgba(255, 255, 255, 0.92);
-        border: 4px solid #000000;
-        box-shadow: 8px 8px 0px #000000;
-        border-radius: 30px;
+        background: rgba(255, 255, 255, 0.94) !important;
+        border: 4px solid #000000 !important;
+        box-shadow: 8px 8px 0px #000000 !important;
+        border-radius: 30px !important;
         padding: 25px;
         text-align: center;
         margin-bottom: 2rem;
-        transition: all 0.2s ease;
     }
     
+    /* Playful Wobbling Image Frame and Content Moving Together */
     .profile-frame {
         width: 120px;
         height: 120px;
@@ -69,15 +70,18 @@ st.markdown("""
         align-items: center;
         justify-content: center;
         padding: 5px;
-        animation: blobMorph 6s ease-in-out infinite alternate;
         box-shadow: 4px 4px 0px #000000;
+        animation: blobMorph 6s ease-in-out infinite alternate;
+        overflow: hidden;
     }
     
     .profile-img {
-        width: 100%; height: 100%;
-        border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+        width: 100%; 
+        height: 100%;
         object-fit: cover;
-        background: #fff;
+        background: #ffffff;
+        border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+        animation: blobMorph 6s ease-in-out infinite alternate;
     }
 
     @keyframes blobMorph {
@@ -105,30 +109,30 @@ st.markdown("""
     }
 
     .score-board {
-        background: #FFFF00;
-        border: 2px solid #000000;
+        background: #FFFF00 !important;
+        border: 2px solid #000000 !important;
         padding: 6px 16px;
         border-radius: 20px;
         display: inline-block;
         font-weight: 800;
-        color: #000000;
+        color: #000000 !important;
         margin-top: 10px;
         font-size: 0.9rem;
         box-shadow: 3px 3px 0px #000000;
     }
 
-    /* === NEON CARTOON CARD LAYOUT === */
+    /* === LIGHT CARTOON CARD LAYOUT === */
     .section-tag {
         font-family: 'Arial Black', Gadget, sans-serif;
         font-size: 0.9rem;
         font-weight: 900;
         text-transform: uppercase;
-        color: #000000;
+        color: #000000 !important;
         margin: 2rem 0 0.8rem 8px;
         display: inline-block;
-        background: #FFB703;
+        background: #FFB703 !important;
         padding: 2px 8px;
-        border: 2px solid #000000;
+        border: 2px solid #000000 !important;
         transform: rotate(-1deg);
         box-shadow: 2px 2px 0px #000000;
     }
@@ -137,23 +141,23 @@ st.markdown("""
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background: #FFFFFF;
-        border: 3px solid #000000;
-        border-radius: 20px;
+        background: #FFFFFF !important;
+        border: 3px solid #000000 !important;
+        border-radius: 20px !important;
         padding: 16px 20px;
         margin-bottom: 14px;
         text-decoration: none !important;
-        box-shadow: 5px 5px 0px #000000;
+        box-shadow: 5px 5px 0px #000000 !important;
         transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     
     .link-card:hover {
-        transform: scale(1.03) translate(-2px, -2px);
-        box-shadow: 8px 8px 0px #000000;
+        transform: scale(1.03) translate(-2px, -2px) !important;
+        box-shadow: 8px 8px 0px #000000 !important;
     }
     
-    .link-card.hub-card:hover { border-color: #FF007F; background: #FFF0F5; }
-    .link-card.dev-card:hover { border-color: #00F5D4; background: #E6FFFA; }
+    .link-card.hub-card:hover { border-color: #FF007F !important; background: #FFF0F5 !important; }
+    .link-card.dev-card:hover { border-color: #00F5D4 !important; background: #E6FFFA !important; }
 
     .link-left {
         display: flex;
@@ -168,9 +172,9 @@ st.markdown("""
         align-items: center;
         justify-content: center;
         border-radius: 12px;
-        background: #F1F5F9;
-        border: 2px solid #000000;
-        color: #000000;
+        background: #F1F5F9 !important;
+        border: 2px solid #000000 !important;
+        color: #000000 !important;
     }
     
     .link-title {
@@ -186,9 +190,9 @@ st.markdown("""
     }
     
     .copy-pill {
-        background: #E2E8F0;
-        border: 2px solid #000000;
-        color: #000000;
+        background: #E2E8F0 !important;
+        border: 2px solid #000000 !important;
+        color: #000000 !important;
         padding: 6px 14px;
         border-radius: 12px;
         font-size: 0.75rem;
@@ -198,7 +202,7 @@ st.markdown("""
     }
     </style>
 
-    <!-- HTML5 Full-Screen Canvas Engine -->
+    <!-- HTML5 Native Full-Screen Canvas Script Framework -->
     <script>
     let score = 0;
     let bubbles = [];
@@ -209,14 +213,14 @@ st.markdown("""
         if (!canvas) return;
         ctx = canvas.getContext('2d');
         
-        // Dynamically size canvas to absolute device size
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        // Spawn starter bubbles across the whole screen space
-        for(let i=0; i<12; i++) { spawnBubble(true); }
+        // Populate initial setup
+        for(let i=0; i<10; i++) { spawnBubble(true); }
         
         setInterval(updateGame, 25);
+        
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
@@ -229,7 +233,7 @@ st.markdown("""
         bubbles.push({
             x: Math.random() * window.innerWidth,
             y: randomY ? Math.random() * window.innerHeight : window.innerHeight + 40,
-            radius: Math.random() * 18 + 14,
+            radius: Math.random() * 16 + 14,
             speed: Math.random() * 1.2 + 0.8,
             wobble: Math.random() * 2,
             wobbleSpeed: Math.random() * 0.03
@@ -279,7 +283,7 @@ st.markdown("""
         });
     }
 
-    // Direct script loading hooks
+    // Direct initialization sequence execution checks
     if (document.readyState === "complete" || document.readyState === "interactive") {
         setTimeout(initGame, 300);
     } else {
@@ -302,7 +306,7 @@ st.markdown("""
     </script>
 """, unsafe_allow_html=True)
 
-# Inject Global Fixed Canvas directly into background context
+# Inject Global Game Canvas Node directly into layout structure
 st.markdown('<canvas id="bubbleCanvas"></canvas>', unsafe_allow_html=True)
 
 # 3. Base64 Image Parser for Local Directory File
@@ -313,7 +317,7 @@ try:
 except FileNotFoundError:
     MY_PHOTO_URL = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80"
 
-# Main UI Panel Layout
+# Main Interactive Text Wrapper Layout Panel
 st.markdown(f"""
     <div class="game-zone">
         <div class="profile-frame">
@@ -345,7 +349,7 @@ def render_row(svg_path, title, subtitle, target_url, card_type="hub-card", view
     """
     st.markdown(card_html, unsafe_allow_html=True)
 
-# SVG Icons
+# SVG Raw Vector Shapes
 GLOBE_PATH = "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"
 GITHUB_PATH = "M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"
 LINKEDIN_PATH = "M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"
