@@ -28,18 +28,7 @@ st.markdown("""
         padding-bottom: 3rem !important;
         max-width: 520px !important;
         position: relative;
-        z-index: 10; /* Content sits securely on top */
-    }
-
-    /* === FIXED BACKGROUND INTERACTIVE GAME CANVAS === */
-    #bubbleCanvas {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        z-index: 5; /* Sits just below buttons but ready for interaction */
-        pointer-events: none; /* FIX: Clicks pass right through to links by default! */
+        z-index: 10;
     }
 
     /* === NEON CARTOON HUB HEADERS === */
@@ -114,6 +103,16 @@ st.markdown("""
         box-shadow: 3px 3px 0px #000000;
     }
 
+    /* === SCREEN-WIDE BUBBLE CANVAS ENGINE === */
+    #bubbleCanvas {
+        background: rgba(0, 0, 0, 0.02);
+        display: block; 
+        margin: 15px auto 0 auto;
+        border-radius: 20px; 
+        border: 3px dashed #000000;
+        cursor: pointer;
+    }
+
     /* === LIGHT CARTOON CARD LAYOUT === */
     .section-tag {
         font-family: 'Arial Black', Gadget, sans-serif;
@@ -128,8 +127,6 @@ st.markdown("""
         border: 2px solid #000000 !important;
         transform: rotate(-1deg);
         box-shadow: 2px 2px 0px #000000;
-        position: relative;
-        z-index: 20;
     }
     
     .link-card {
@@ -144,8 +141,6 @@ st.markdown("""
         text-decoration: none !important;
         box-shadow: 5px 5px 0px #000000 !important;
         transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        position: relative;
-        z-index: 20; /* Explicitly forces link cards above the canvas grid */
     }
     
     .link-card:hover {
@@ -196,12 +191,10 @@ st.markdown("""
         font-weight: 800;
         cursor: pointer;
         box-shadow: 2px 2px 0px #000000;
-        position: relative;
-        z-index: 30;
     }
     </style>
 
-    <!-- HTML5 Native Full-Screen Canvas Script Framework -->
+    <!-- Custom Click and Game Scripts -->
     <script>
     let score = 0;
     let bubbles = [];
@@ -212,40 +205,34 @@ st.markdown("""
         if (!canvas) return;
         ctx = canvas.getContext('2d');
         
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        // Dynamic resizing relative to browser window width
+        canvas.width = canvas.parentElement.clientWidth - 10;
+        canvas.height = 160;
 
-        for(let i=0; i<10; i++) { spawnBubble(true); }
+        for(let i=0; i<6; i++) { spawnBubble(true); }
         
         setInterval(updateGame, 25);
-        
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
-
-        // Global track for pointer moving highlights
-        window.addEventListener('mousemove', checkHover);
-        window.addEventListener('mousedown', checkPop);
+        canvas.addEventListener('mousedown', checkPop);
     }
 
     function spawnBubble(randomY = false) {
         bubbles.push({
-            x: Math.random() * window.innerWidth,
-            y: randomY ? Math.random() * window.innerHeight : window.innerHeight + 40,
-            radius: Math.random() * 16 + 14,
-            speed: Math.random() * 1.2 + 0.8,
+            x: Math.random() * (canvas.width - 40) + 20,
+            y: randomY ? Math.random() * canvas.height : canvas.height + 30,
+            radius: Math.random() * 14 + 12,
+            speed: Math.random() * 0.9 + 0.7,
             wobble: Math.random() * 2,
-            wobbleSpeed: Math.random() * 0.03
+            wobbleSpeed: Math.random() * 0.04
         });
     }
 
     function updateGame() {
+        if (!ctx) return;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         bubbles.forEach((b, index) => {
             b.y -= b.speed;
             b.wobble += b.wobbleSpeed;
-            let currentX = b.x + Math.sin(b.wobble) * 15;
+            let currentX = b.x + Math.sin(b.wobble) * 10;
             
             ctx.beginPath();
             let grad = ctx.createRadialGradient(currentX - b.radius/3, b.y - b.radius/3, 2, currentX, b.y, b.radius);
@@ -255,7 +242,7 @@ st.markdown("""
             
             ctx.fillStyle = grad;
             ctx.strokeStyle = '#000000';
-            ctx.lineWidth = 2.5;
+            ctx.lineWidth = 2;
             ctx.arc(currentX, b.y, b.radius, 0, Math.PI * 2);
             ctx.fill();
             ctx.stroke();
@@ -267,73 +254,62 @@ st.markdown("""
         });
     }
 
-    // Dynamic pointer capture filter engine
-    function isMouseOverBubble(mouseX, mouseY) {
-        let overBubble = false;
-        bubbles.forEach((b) => {
-            let currentX = b.x + Math.sin(b.wobble) * 15;
-            let dist = Math.hypot(mouseX - currentX, mouseY - b.y);
-            if (dist < b.radius) {
-                overBubble = true;
-            }
-        });
-        return overBubble;
-    }
-
-    function checkHover(e) {
-        // Automatically switch click interception states depending on bubble placement boundaries
-        if (isMouseOverBubble(e.clientX, e.clientY)) {
-            canvas.style.pointerEvents = 'auto';
-            canvas.style.cursor = 'pointer';
-        } else {
-            canvas.style.pointerEvents = 'none';
-            canvas.style.cursor = 'default';
-        }
-    }
-
     function checkPop(e) {
-        const mouseX = e.clientX;
-        const mouseY = e.clientY;
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
         
         bubbles.forEach((b, index) => {
-            let currentX = b.x + Math.sin(b.wobble) * 15;
+            let currentX = b.x + Math.sin(b.wobble) * 10;
             let dist = Math.hypot(mouseX - currentX, mouseY - b.y);
             if (dist < b.radius) {
                 bubbles.splice(index, 1);
                 score++;
                 document.getElementById('score-value').innerText = score;
                 spawnBubble();
-                
-                // Reset pointer handling right after click completes to keep elements crisp
-                canvas.style.pointerEvents = 'none';
             }
         });
     }
 
+    // Direct initialization loop sequence handlers
+    window.addEventListener('load', () => setTimeout(initGame, 300));
     if (document.readyState === "complete" || document.readyState === "interactive") {
         setTimeout(initGame, 300);
-    } else {
-        document.addEventListener("DOMContentLoaded", () => setTimeout(initGame, 300));
     }
 
+    // Bulletproof Clean Native Copy Operations
     function copyLink(text, e) {
         if(e) { e.preventDefault(); e.stopPropagation(); }
-        navigator.clipboard.writeText(text).then(() => {
+        
+        // Fallback strategy support for modern browser clipboard environments
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(() => {
+                showSuccessState();
+            });
+        } else {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            showSuccessState();
+        }
+
+        function showSuccessState() {
             const btn = window.event.target;
+            const orig = btn.innerText;
             btn.innerText = 'POPPED! 🎉';
             btn.style.background = '#00F5D4';
             setTimeout(() => {
-                btn.innerText = 'Copy';
+                btn.innerText = orig;
                 btn.style.background = '#E2E8F0';
             }, 1200);
-        });
+        }
         return false;
     }
     </script>
 """, unsafe_allow_html=True)
-
-# Inject Global Game Canvas Node cleanly behind the block container
-st.markdown('<canvas id="bubbleCanvas"></canvas>', unsafe_allow_html=True)
 
 # 3. Base64 Image Parser for Local Directory File
 try:
@@ -343,7 +319,7 @@ try:
 except FileNotFoundError:
     MY_PHOTO_URL = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80"
 
-# Main Text Wrapper Layout Panel
+# Main User Panel Block Display Component
 st.markdown(f"""
     <div class="game-zone">
         <div class="profile-frame">
@@ -352,6 +328,9 @@ st.markdown(f"""
         <div class="profile-title">HARKIRAN KAUR</div>
         <div class="profile-subtitle">🍭 Bubbly Software Engineer & Developer</div>
         <div><div class="score-board">🎈 Bubbles Popped: <span id="score-value">0</span></div></div>
+        
+        <!-- Game Screen Target Engine Canvas Area -->
+        <canvas id="bubbleCanvas"></canvas>
     </div>
 """, unsafe_allow_html=True)
 
@@ -375,7 +354,7 @@ def render_row(svg_path, title, subtitle, target_url, card_type="hub-card", view
     """
     st.markdown(card_html, unsafe_allow_html=True)
 
-# SVG Raw Vector Shapes
+# SVG Vector Layout Shapes
 GLOBE_PATH = "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"
 GITHUB_PATH = "M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"
 LINKEDIN_PATH = "M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"
