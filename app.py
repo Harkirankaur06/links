@@ -38,9 +38,8 @@ st.markdown("""
         left: 0;
         width: 100vw;
         height: 100vh;
-        z-index: 1; /* Sits safely behind the text and cards layer */
-        cursor: default; /* FIX: Changes cursor back to a normal arrow on empty space! */
-        pointer-events: auto;
+        z-index: 5; /* Sits just below buttons but ready for interaction */
+        pointer-events: none; /* FIX: Clicks pass right through to links by default! */
     }
 
     /* === NEON CARTOON HUB HEADERS === */
@@ -129,6 +128,8 @@ st.markdown("""
         border: 2px solid #000000 !important;
         transform: rotate(-1deg);
         box-shadow: 2px 2px 0px #000000;
+        position: relative;
+        z-index: 20;
     }
     
     .link-card {
@@ -143,6 +144,8 @@ st.markdown("""
         text-decoration: none !important;
         box-shadow: 5px 5px 0px #000000 !important;
         transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        z-index: 20; /* Explicitly forces link cards above the canvas grid */
     }
     
     .link-card:hover {
@@ -193,6 +196,8 @@ st.markdown("""
         font-weight: 800;
         cursor: pointer;
         box-shadow: 2px 2px 0px #000000;
+        position: relative;
+        z-index: 30;
     }
     </style>
 
@@ -219,7 +224,8 @@ st.markdown("""
             canvas.height = window.innerHeight;
         });
 
-        // Track clicks globally across the window layer
+        // Global track for pointer moving highlights
+        window.addEventListener('mousemove', checkHover);
         window.addEventListener('mousedown', checkPop);
     }
 
@@ -261,12 +267,31 @@ st.markdown("""
         });
     }
 
-    function checkPop(e) {
-        // Prevent registering background bubble pops if user explicitly clicks a button or link card
-        if (e.target.closest('.link-card') || e.target.closest('.copy-pill')) {
-            return;
-        }
+    // Dynamic pointer capture filter engine
+    function isMouseOverBubble(mouseX, mouseY) {
+        let overBubble = false;
+        bubbles.forEach((b) => {
+            let currentX = b.x + Math.sin(b.wobble) * 15;
+            let dist = Math.hypot(mouseX - currentX, mouseY - b.y);
+            if (dist < b.radius) {
+                overBubble = true;
+            }
+        });
+        return overBubble;
+    }
 
+    function checkHover(e) {
+        // Automatically switch click interception states depending on bubble placement boundaries
+        if (isMouseOverBubble(e.clientX, e.clientY)) {
+            canvas.style.pointerEvents = 'auto';
+            canvas.style.cursor = 'pointer';
+        } else {
+            canvas.style.pointerEvents = 'none';
+            canvas.style.cursor = 'default';
+        }
+    }
+
+    function checkPop(e) {
         const mouseX = e.clientX;
         const mouseY = e.clientY;
         
@@ -278,6 +303,9 @@ st.markdown("""
                 score++;
                 document.getElementById('score-value').innerText = score;
                 spawnBubble();
+                
+                // Reset pointer handling right after click completes to keep elements crisp
+                canvas.style.pointerEvents = 'none';
             }
         });
     }
