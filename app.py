@@ -31,89 +31,6 @@ st.markdown("""
         z-index: 10;
     }
 
-    /* === INTERACTIVE GAME ZONE === */
-    .game-zone {
-        background: rgba(255, 255, 255, 0.9);
-        border: 4px solid #000000;
-        box-shadow: 8px 8px 0px #000000;
-        border-radius: 30px;
-        padding: 25px;
-        text-align: center;
-        margin-bottom: 2rem;
-        position: relative;
-        z-index: 20;
-        user-select: none;
-    }
-    
-    /* Interactive Canvas for click/pop tracking */
-    #bubbleCanvas {
-        background: transparent;
-        display: block;
-        margin: 15px auto 0 auto;
-        border-radius: 20px;
-        border: 2px dashed #000000;
-        cursor: pointer;
-    }
-    
-    /* Playful Wobbling Image Frame */
-    .profile-frame {
-        width: 120px;
-        height: 120px;
-        border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-        background: linear-gradient(45deg, #FF007F, #7B2CBF, #00F5D4);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 5px;
-        animation: blobMorph 6s ease-in-out infinite alternate;
-        box-shadow: 4px 4px 0px #000000;
-    }
-    
-    .profile-img {
-        width: 100%; height: 100%;
-        border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-        object-fit: cover;
-        background: #fff;
-        overflow: hidden;
-    }
-
-    @keyframes blobMorph {
-        0% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
-        50% { border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%; }
-        100% { border-radius: 50% 50% 50% 50% / 40% 60% 40% 60%; }
-    }
-    
-    .profile-title {
-        font-family: 'Arial Black', Gadget, sans-serif;
-        font-size: 2.5rem;
-        font-weight: 900;
-        color: #000000 !important;
-        margin-top: 15px;
-        text-transform: uppercase;
-        letter-spacing: -1px;
-        text-shadow: 2px 2px 0px #00F5D4, -2px -2px 0px #FF007F;
-    }
-    
-    .profile-subtitle {
-        font-size: 1.05rem;
-        font-weight: 700;
-        color: #334155 !important;
-        margin-top: 5px;
-    }
-
-    .score-board {
-        background: #FFFF00;
-        border: 2px solid #000000;
-        padding: 6px 16px;
-        border-radius: 20px;
-        display: inline-block;
-        font-weight: 800;
-        color: #000000;
-        margin-top: 10px;
-        font-size: 0.9rem;
-        box-shadow: 3px 3px 0px #000000;
-    }
-
     /* === NEON CARTOON CARD LAYOUT === */
     .section-tag {
         font-family: 'Arial Black', Gadget, sans-serif;
@@ -195,104 +112,7 @@ st.markdown("""
     }
     </style>
 
-    <!-- HTML5 Canvas Active Game Engine Script -->
     <script>
-    let score = 0;
-    let bubbles = [];
-    let canvas, ctx;
-
-    function initGame() {
-        canvas = document.getElementById('bubbleCanvas');
-        if (!canvas) return;
-        ctx = canvas.getContext('2d');
-        
-        // Handle window scaling context safely
-        canvas.width = canvas.parentElement.clientWidth - 40;
-        canvas.height = 180;
-
-        // Spawn starter bubbles setup loop
-        for(let i=0; i<6; i++) { spawnBubble(); }
-        
-        // Standard loop tick
-        setInterval(updateGame, 30);
-        
-        canvas.addEventListener('click', checkPop);
-    }
-
-    function spawnBubble() {
-        bubbles.push({
-            x: Math.random() * (canvas.width - 40) + 20,
-            y: canvas.height + Math.random() * 50,
-            radius: Math.random() * 15 + 15,
-            speed: Math.random() * 1 + 0.8,
-            wobble: Math.random() * 2,
-            wobbleSpeed: Math.random() * 0.05
-        });
-    }
-
-    function updateGame() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        bubbles.forEach((b, index) => {
-            b.y -= b.speed;
-            b.wobble += b.wobbleSpeed;
-            let currentX = b.x + Math.sin(b.wobble) * 10;
-            
-            // Draw gradient shiny bubble layout
-            ctx.beginPath();
-            let grad = ctx.createRadialGradient(currentX - b.radius/3, b.y - b.radius/3, 2, currentX, b.y, b.radius);
-            grad.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
-            grad.addColorStop(0.4, 'rgba(0, 245, 212, 0.4)');
-            grad.addColorStop(1, 'rgba(255, 0, 127, 0.3)');
-            
-            ctx.fillStyle = grad;
-            ctx.strokeStyle = '#000000';
-            ctx.lineWidth = 2;
-            ctx.arc(currentX, b.y, b.radius, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.stroke();
-            
-            // Recycle bubble if it floats off top canvas edge
-            if (b.y + b.radius < 0) {
-                bubbles.splice(index, 1);
-                spawnBubble();
-            }
-        });
-    }
-
-    function checkPop(e) {
-        const rect = canvas.getBoundingClientRect();
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
-        
-        bubbles.forEach((b, index) => {
-            let currentX = b.x + Math.sin(b.wobble) * 10;
-            let dist = Math.hypot(mouseX - currentX, mouseY - b.y);
-            
-            // Collision detection hit!
-            if (dist < b.radius) {
-                bubbles.splice(index, 1);
-                score++;
-                document.getElementById('score-value').innerText = score;
-                spawnBubble();
-                
-                // Flash boundary layout border temporarily for game response loop
-                const zone = document.getElementById('game-zone');
-                zone.style.borderColor = '#00F5D4';
-                setTimeout(() => zone.style.borderColor = '#000000', 100);
-            }
-        });
-    }
-
-    // Dynamic document check loop hook
-    document.addEventListener("DOMContentLoaded", function() {
-        setTimeout(initGame, 500);
-    });
-    // Fallback for direct loads
-    if (document.readyState === "complete" || document.readyState === "interactive") {
-        setTimeout(initGame, 500);
-    }
-
     function copyLink(text, e) {
         if(e) { e.preventDefault(); e.stopPropagation(); }
         navigator.clipboard.writeText(text).then(() => {
@@ -317,22 +137,154 @@ try:
 except FileNotFoundError:
     MY_PHOTO_URL = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80"
 
-# Main Interactive UI Composition Block
-st.markdown(f"""
-    <div class="game-zone" id="game-zone">
-        <div class="profile-frame">
-            <img class="profile-img" src="{MY_PHOTO_URL}" alt="Harkiran Kaur"/>
-        </div>
-        <div class="profile-title">HARKIRAN KAUR</div>
-        <div class="profile-subtitle">🍭 Bubbly Software Engineer & Developer</div>
-        <div><div class="score-board">🎈 Bubbles Popped: <span id="score-value">0</span></div></div>
-        
-        <!-- Live HTML5 Game Node Area -->
-        <canvas id="bubbleCanvas"></canvas>
+# 4. Embedded HTML5 Isolated Sandbox (Bypasses Streamlit Element Blocking)
+GAME_HTML = f"""
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+    body {{
+        margin: 0; padding: 0; font-family: 'Arial Black', sans-serif;
+        background: rgba(255, 255, 255, 0.92);
+        border: 4px solid #000000;
+        box-shadow: 6px 6px 0px #000000;
+        border-radius: 26px;
+        text-align: center;
+        padding: 20px;
+        overflow: hidden;
+    }}
+    .profile-frame {{
+        width: 110px; height: 110px;
+        border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+        background: linear-gradient(45deg, #FF007F, #7B2CBF, #00F5D4);
+        display: inline-flex;
+        align-items: center; justify-content: center;
+        padding: 4px;
+        animation: blobMorph 6s ease-in-out infinite alternate;
+        box-shadow: 4px 4px 0px #000000;
+    }}
+    .profile-img {{
+        width: 100%; height: 100%;
+        border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+        object-fit: cover;
+        background: #fff;
+        animation: blobMorph 6s ease-in-out infinite alternate;
+    }}
+    @keyframes blobMorph {{
+        0% {{ border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }}
+        50% {{ border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%; }}
+        100% {{ border-radius: 50% 50% 50% 50% / 40% 60% 40% 60%; }}
+    }}
+    .profile-title {{
+        font-size: 2.2rem; font-weight: 900; color: #000000;
+        margin-top: 12px; margin-bottom: 2px; text-transform: uppercase;
+        letter-spacing: -1px;
+        text-shadow: 2px 2px 0px #00F5D4, -2px -2px 0px #FF007F;
+    }}
+    .profile-subtitle {{
+        font-size: 0.95rem; font-weight: 700; color: #334155; margin-bottom: 10px;
+    }}
+    .score-board {{
+        background: #FFFF00; border: 2px solid #000000;
+        padding: 5px 14px; border-radius: 20px;
+        display: inline-block; font-weight: 800; color: #000000;
+        font-size: 0.85rem; box-shadow: 3px 3px 0px #000000;
+        margin-bottom: 10px;
+    }}
+    #bubbleCanvas {{
+        background: rgba(0, 0, 0, 0.03);
+        display: block; margin: 0 auto;
+        border-radius: 16px; border: 2px dashed #000000;
+        cursor: pointer;
+    }}
+    </style>
+</head>
+<body>
+    <div class="profile-frame">
+        <img class="profile-img" src="{MY_PHOTO_URL}" alt="Harkiran Kaur"/>
     </div>
-""", unsafe_allow_html=True)
+    <div class="profile-title">HARKIRAN KAUR</div>
+    <div class="profile-subtitle">🍭 Bubbly Software Engineer & Developer</div>
+    <div class="score-board">🎈 Bubbles Popped: <span id="score-value">0</span></div>
+    
+    <canvas id="bubbleCanvas"></canvas>
 
-# 4. Row Card Component Template
+    <script>
+    let score = 0;
+    let bubbles = [];
+    const canvas = document.getElementById('bubbleCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    canvas.width = window.innerWidth - 60;
+    canvas.height = 130;
+
+    for(let i=0; i<5; i++) {{ spawnBubble(true); }}
+    setInterval(updateGame, 25);
+    canvas.addEventListener('mousedown', checkPop);
+
+    function spawnBubble(randomY = false) {{
+        bubbles.push({{
+            x: Math.random() * (canvas.width - 40) + 20,
+            y: randomY ? Math.random() * canvas.height : canvas.height + 30,
+            radius: Math.random() * 12 + 12,
+            speed: Math.random() * 0.8 + 0.6,
+            wobble: Math.random() * 2,
+            wobbleSpeed: Math.random() * 0.04
+        }});
+    }}
+
+    function updateGame() {{
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        bubbles.forEach((b, index) => {{
+            b.y -= b.speed;
+            b.wobble += b.wobbleSpeed;
+            let currentX = b.x + Math.sin(b.wobble) * 8;
+            
+            ctx.beginPath();
+            let grad = ctx.createRadialGradient(currentX - b.radius/3, b.y - b.radius/3, 1, currentX, b.y, b.radius);
+            grad.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
+            grad.addColorStop(0.4, 'rgba(0, 245, 212, 0.5)');
+            grad.addColorStop(1, 'rgba(255, 0, 127, 0.35)');
+            
+            ctx.fillStyle = grad;
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 2;
+            ctx.arc(currentX, b.y, b.radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            
+            if (b.y + b.radius < 0) {{
+                bubbles.splice(index, 1);
+                spawnBubble();
+            }}
+        }});
+    }}
+
+    function checkPop(e) {{
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        
+        bubbles.forEach((b, index) => {{
+            let currentX = b.x + Math.sin(b.wobble) * 8;
+            let dist = Math.hypot(mouseX - currentX, mouseY - b.y);
+            if (dist < b.radius) {{
+                bubbles.splice(index, 1);
+                score++;
+                document.getElementById('score-value').innerText = score;
+                spawnBubble();
+            }}
+        }});
+    }}
+    </script>
+</body>
+</html>
+"""
+
+# Serve Sandbox Container
+st.components.v1.html(GAME_HTML, height=390, scrolling=False)
+
+# 5. Row Card Component Template
 def render_row(svg_path, title, subtitle, target_url, card_type="hub-card", viewbox="0 0 24 24"):
     card_html = f"""
     <a class="link-card {card_type}" href="{target_url}" target="_blank">
