@@ -28,25 +28,18 @@ st.markdown("""
         padding-bottom: 3rem !important;
         max-width: 520px !important;
         position: relative;
-        z-index: 10;
-        pointer-events: none;
+        z-index: 10; /* Content sits securely on top */
     }
 
-    /* Allow clicking on the layout content elements */
-    .game-zone, .link-card, .section-tag, .copy-pill {
-        pointer-events: auto;
-    }
-
-    /* === FIXED FULL SCREEN INTERACTIVE GAME CANVAS === */
+    /* === FIXED BACKGROUND INTERACTIVE GAME CANVAS === */
     #bubbleCanvas {
         position: fixed;
         top: 0;
         left: 0;
         width: 100vw;
         height: 100vh;
-        z-index: 2;
+        z-index: 1; /* Sits safely behind the text and cards layer */
         cursor: pointer;
-        pointer-events: auto;
     }
 
     /* === NEON CARTOON HUB HEADERS === */
@@ -216,7 +209,6 @@ st.markdown("""
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        // Populate initial setup
         for(let i=0; i<10; i++) { spawnBubble(true); }
         
         setInterval(updateGame, 25);
@@ -226,7 +218,8 @@ st.markdown("""
             canvas.height = window.innerHeight;
         });
 
-        canvas.addEventListener('mousedown', checkPop);
+        // Track clicks globally across the window layer
+        window.addEventListener('mousedown', checkPop);
     }
 
     function spawnBubble(randomY = false) {
@@ -268,6 +261,11 @@ st.markdown("""
     }
 
     function checkPop(e) {
+        // Prevent registering background bubble pops if user explicitly clicks a button or link card
+        if (e.target.closest('.link-card') || e.target.closest('.copy-pill')) {
+            return;
+        }
+
         const mouseX = e.clientX;
         const mouseY = e.clientY;
         
@@ -283,7 +281,6 @@ st.markdown("""
         });
     }
 
-    // Direct initialization sequence execution checks
     if (document.readyState === "complete" || document.readyState === "interactive") {
         setTimeout(initGame, 300);
     } else {
@@ -306,7 +303,7 @@ st.markdown("""
     </script>
 """, unsafe_allow_html=True)
 
-# Inject Global Game Canvas Node directly into layout structure
+# Inject Global Game Canvas Node cleanly behind the block container
 st.markdown('<canvas id="bubbleCanvas"></canvas>', unsafe_allow_html=True)
 
 # 3. Base64 Image Parser for Local Directory File
@@ -317,7 +314,7 @@ try:
 except FileNotFoundError:
     MY_PHOTO_URL = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80"
 
-# Main Interactive Text Wrapper Layout Panel
+# Main Text Wrapper Layout Panel
 st.markdown(f"""
     <div class="game-zone">
         <div class="profile-frame">
