@@ -39,7 +39,8 @@ st.markdown("""
         width: 100vw;
         height: 100vh;
         z-index: 1; /* Sits safely behind the text and cards layer */
-        cursor: pointer;
+        cursor: default; /* FIX: Changes cursor back to a normal arrow on empty space! */
+        pointer-events: auto;
     }
 
     /* === NEON CARTOON HUB HEADERS === */
