@@ -164,6 +164,7 @@ st.markdown("""
         text-decoration: none !important;
         box-shadow: 5px 5px 0px #000000;
         transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transform: scale(1.03) translate(-2px, -2px) !important;
     }
     
     .link-card:hover {
