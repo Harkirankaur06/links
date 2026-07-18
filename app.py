@@ -243,7 +243,7 @@ st.markdown("""
         
         <div class="profile-frame">
             <div class="profile-img">
-                <img src="../AVATAR.jpg" style="width:100%; height:100%; border-radius:50%; object-fit:cover;" alt="Harkiran"/>
+                <img src="AVATAR.jpg" style="width:100%; height:100%; border-radius:50%; object-fit:cover;" alt="Harkiran"/>
             </div>
         </div>
         
