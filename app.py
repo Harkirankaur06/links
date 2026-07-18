@@ -1,4 +1,5 @@
 import streamlit as st
+import time
 
 # 1. Initialize Page Profile & Global Config
 st.set_page_config(
@@ -7,25 +8,25 @@ st.set_page_config(
     layout="centered"
 )
 
-# 2. Premium Engineering UI Overhaul (Neon Glassmorphism + Background Particles)
+# 2. Complete UI Engineering Overhaul (Neon Glassmorphism + Background Particles)
 st.markdown("""
     <style>
-    /* Absolute reset of Streamlit styling defaults */
+    /* Absolute reset of Streamlit styling defaults to allow custom composition */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
-    .stApp { background: #090D16 !important; }
+    .stApp { background: #030712 !important; }
     
     /* Layout Framework Constraints */
     .block-container {
-        padding-top: 4rem !important;
-        padding-bottom: 4rem !important;
-        max-width: 540px !important;
+        padding-top: 5rem !important;
+        padding-bottom: 5rem !important;
+        max-width: 550px !important;
         position: relative;
-        z-index: 2;
+        z-index: 10;
     }
     
-    /* Dynamic Moving Canvas Layer (Pure CSS Particles background) */
+    /* === DYNAMIC CSS PARTICLE BACKGROUND (Always Visible) === */
     .bg-animation {
         position: fixed;
         top: 0; left: 0; width: 100%; height: 100%;
@@ -36,149 +37,163 @@ st.markdown("""
     .orb {
         position: absolute;
         width: 350px; height: 350px;
-        background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(0,0,0,0) 70%);
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.2) 0%, rgba(0,0,0,0) 70%);
         border-radius: 50%;
-        animation: floatOrb 20s infinite alternate ease-in-out;
+        animation: floatOrb 25s infinite alternate ease-in-out;
     }
     .orb-2 {
         position: absolute;
-        bottom: 10%, right: 10%;
+        bottom: 5%; right: -5%;
         width: 400px; height: 400px;
-        background: radial-gradient(circle, rgba(168, 85, 247, 0.12) 0%, rgba(0,0,0,0) 70%);
+        background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, rgba(0,0,0,0) 70%);
         border-radius: 50%;
-        animation: floatOrb 25s infinite alternate-reverse ease-in-out;
+        animation: floatOrb 30s infinite alternate-reverse ease-in-out;
     }
     @keyframes floatOrb {
         0% { transform: translate(0px, 0px) scale(1); }
-        100% { transform: translate(60px, 40px) scale(1.2); }
+        100% { transform: translate(80px, 60px) scale(1.1); }
     }
 
-    /* User Presentation Branding Card */
+    /* === PREMIUM PROFILE HEAD (Moving Images) === */
     .avatar-wrapper {
         display: flex;
         justify-content: center;
-        margin-bottom: 18px;
+        margin-bottom: 20px;
+        position: relative;
     }
+    /* Animated Gradient Border that spins */
     .avatar-placeholder {
-        width: 90px;
-        height: 90px;
+        width: 100px;
+        height: 100px;
         border-radius: 50%;
         background: linear-gradient(135deg, #6366F1, #A855F7);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 2rem;
-        box-shadow: 0 0 25px rgba(99, 102, 241, 0.4);
+        font-size: 2.2rem;
+        box-shadow: 0 0 35px rgba(99, 102, 241, 0.5);
         border: 2px solid rgba(255, 255, 255, 0.1);
+        position: relative;
+        overflow: hidden;
+        animation: spin-gradient 4s linear infinite;
+    }
+    @keyframes spin-gradient {
+        0% { border-color: rgba(99, 102, 241, 0.8); }
+        50% { border-color: rgba(168, 85, 247, 0.8); }
+        100% { border-color: rgba(99, 102, 241, 0.8); }
     }
     
     .profile-title {
         font-family: system-ui, -apple-system, sans-serif;
-        font-size: 2.6rem;
+        font-size: 2.8rem;
         font-weight: 900;
-        letter-spacing: -1px;
+        letter-spacing: -1.5px;
         text-align: center;
-        background: linear-gradient(to right, #FFFFFF, #CBD5E1);
+        background: linear-gradient(to right, #FFFFFF, #94A3B8);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        margin-bottom: 4px;
+        margin-bottom: 5px;
     }
     
     .profile-subtitle {
-        font-size: 0.95rem;
+        font-size: 1rem;
         color: #94A3B8;
         text-align: center;
-        margin-bottom: 24px;
+        margin-bottom: 28px;
         letter-spacing: 0.5px;
+        font-weight: 500;
     }
 
-    /* Core Action Links Setup */
+    /* === DIRECT CONNECT GRID === */
     .action-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        margin-bottom: 2rem;
+        gap: 14px;
+        margin-bottom: 2.5rem;
     }
     .action-button {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 14px;
-        padding: 12px;
-        color: #E2E8F0 !important;
+        gap: 10px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 14px;
+        color: #F8FAFC !important;
         font-weight: 600;
         font-size: 0.9rem;
         text-decoration: none !important;
-        transition: all 0.2s;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .action-button:hover {
-        background: rgba(255, 255, 255, 0.07);
+        background: rgba(255, 255, 255, 0.08);
         border-color: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
     }
     
-    /* Section Headings Styling */
+    /* Section Headings */
     .section-label {
         font-size: 0.75rem;
         font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 2px;
+        letter-spacing: 2.5px;
         color: #818CF8;
-        margin-top: 2rem;
-        margin-bottom: 0.75rem;
+        margin-top: 2.5rem;
+        margin-bottom: 1rem;
         padding-left: 4px;
     }
     
-    /* Interactive Cards Grid System */
+    /* === INTERACTIVE GLASSMORPHIC LINK CARDS === */
     .link-card {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background: rgba(15, 23, 42, 0.4);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 18px;
-        padding: 18px 22px;
-        margin-bottom: 12px;
+        background: rgba(15, 23, 42, 0.5);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 20px;
+        padding: 20px 24px;
+        margin-bottom: 14px;
         text-decoration: none !important;
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); /* Advanced timing for physics */
     }
     
-    /* Dynamic Hover/Neon Border Glow Effects */
+    /* Dynamic Hover: Neon Border Glow + Rotation */
     .link-card:hover {
-        transform: translateY(-3px) scale(1.01);
-        background: rgba(15, 23, 42, 0.6);
-        border-color: rgba(99, 102, 241, 0.3);
-        box-shadow: 0 15px 30px -10px rgba(99, 102, 241, 0.2);
+        transform: translateY(-4px) scale(1.015) rotate(0.2deg);
+        background: rgba(15, 23, 42, 0.7);
+        border-color: rgba(99, 102, 241, 0.4);
+        box-shadow: 0 20px 40px -15px rgba(99, 102, 241, 0.25), 0 0 15px rgba(99, 102, 241, 0.1);
     }
     
     .link-content {
         display: flex;
         align-items: center;
-        gap: 16px;
+        gap: 18px;
     }
     
+    /* Animated Icon Wrapper */
     .icon-wrapper {
-        width: 44px;
-        height: 44px;
+        width: 46px;
+        height: 46px;
         background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1));
-        border: 1px solid rgba(99, 102, 241, 0.2);
+        border: 1px solid rgba(99, 102, 241, 0.3);
         border-radius: 14px;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.3s;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
     .link-card:hover .icon-wrapper {
         background: linear-gradient(135deg, #6366F1, #A855F7);
         border-color: transparent;
-        transform: rotate(4deg);
+        transform: rotate(5deg) scale(1.1);
     }
 
+    /* Target direct SVGs inside the wrapper on hover */
     .link-card:hover i {
         color: #FFFFFF !important;
     }
@@ -191,48 +206,48 @@ st.markdown("""
     .link-title {
         color: #F8FAFC !important;
         font-weight: 600;
-        font-size: 1.05rem;
+        font-size: 1.1rem;
         letter-spacing: -0.2px;
     }
     
     .link-subtitle {
-        color: #475569 !important;
+        color: #64748B !important;
         font-size: 0.8rem;
-        margin-top: 2px;
+        margin-top: 3px;
         transition: color 0.2s;
     }
     .link-card:hover .link-subtitle {
-        color: #94A3B8 !important;
+        color: #CBD5E1 !important;
     }
     
     /* Copy Action Pill Button */
     .copy-btn {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        color: #64748B;
-        padding: 6px 12px;
-        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        color: #94A3B8;
+        padding: 8px 14px;
+        border-radius: 12px;
         font-size: 0.75rem;
         font-weight: 600;
         cursor: pointer;
-        transition: all 0.2s;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
     .copy-btn:hover {
         background: #FFFFFF;
         color: #0F172A;
         border-color: #FFFFFF;
-        transform: scale(1.05);
+        transform: scale(1.08);
     }
     </style>
     
-    <!-- Custom Moving Asset Background Nodes -->
+    <!-- Custom Moving Asset Background Nodes (CSS Driven Animations) -->
     <div class="bg-animation">
-        <div class="orb" style="top: 10%; left: -10%;"></div>
-        <div class="orb-2" style="bottom: 5%; right: -5%;"></div>
+        <div class="orb" style="top: 15%; left: -8%;"></div>
+        <div class="orb-2" style="bottom: 8%; right: -6%;"></div>
     </div>
     
-    <!-- Inline Copy Handling Interactivity Script -->
+    <!-- Inline Copy Handling Interactivity Script (Must keep for copy button to work) -->
     <script>
     function copyToClipboard(text, e) {
         if(e) { e.preventDefault(); e.stopPropagation(); }
@@ -245,9 +260,9 @@ st.markdown("""
             btn.style.color = '#FFFFFF';
             setTimeout(() => {
                 btn.innerText = originalText;
-                btn.style.background = 'rgba(255, 255, 255, 0.03)';
-                btn.style.borderColor = 'rgba(255, 255, 255, 0.05)';
-                btn.style.color = '#64748B';
+                btn.style.background = 'rgba(255, 255, 255, 0.04)';
+                btn.style.borderColor = 'rgba(255, 255, 255, 0.07)';
+                btn.style.color = '#94A3B8';
             }, 1200);
         });
         return false;
@@ -255,10 +270,10 @@ st.markdown("""
     </script>
 """, unsafe_allow_html=True)
 
-# 3. Import Vector Icons Library Engine
+# 3. Import Vector Icons Library Engine (Required Internet for full visual)
 st.markdown('<script src="https://unpkg.com/lucide@latest"></script>', unsafe_allow_html=True)
 
-# 4. Profile Header Branding
+# 4. Profile Header Branding & Animations
 st.markdown("""
     <div class="avatar-wrapper">
         <div class="avatar-placeholder">👩‍💻</div>
@@ -281,7 +296,7 @@ def render_link_card(icon_name, title, subtitle, target_url):
     <a class="link-card" href="{target_url}" target="_blank">
         <div class="link-content">
             <div class="icon-wrapper">
-                <i data-lucide="{icon_name}" style="color: #818CF8; width: 18px; height: 18px;"></i>
+                <i data-lucide="{icon_name}" style="color: #A78BFA; width: 20px; height: 20px;"></i>
             </div>
             <div class="link-text-container">
                 <span class="link-title">{title}</span>
@@ -308,8 +323,8 @@ render_link_card("layers", "LEGEND Financial Digital Twin", "psb-steel.vercel.ap
 render_link_card("activity", "Low-Q App", "low-q.vercel.app", "https://low-q.vercel.app")
 render_link_card("terminal", "Unreal App", "unreal.streamlit.app", "https://unreal.streamlit.app")
 
-# Execute Lucide script to process inline rendering tags accurately
+# Execute Lucide script to process inline rendering tags accurately (MUST KEEP AT END)
 st.markdown('<script>lucide.createIcons();</script>', unsafe_allow_html=True)
 
 # 8. Clean Micro-Footer
-st.markdown("<p style='text-align: center; font-size: 11px; color: #334155; margin-top: 4rem; letter-spacing: 0.5px;'>Portfolio Links Engine • Generated via Streamlit</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; font-size: 11px; color: #334155; margin-top: 5rem; letter-spacing: 0.5px; z-index: 10; position: relative;'>Personal Hub &copy; Harkiran Kaur</p>", unsafe_allow_html=True)
